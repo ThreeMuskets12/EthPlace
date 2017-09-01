@@ -1,0 +1,82 @@
+  <head>
+    <title>dAppDemo</title>
+  </head>
+  <body>
+    <h1>Welcome to EthPlace!</h1>
+    {{> hello}}
+  <canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #d3d3d3;">
+  Your browser does not support the HTML5 canvas tag.</canvas>
+  <script>
+  var c = document.getElementById("myCanvas");
+  var ctx = c.getContext("2d");
+  ctx.fillStyle = "#FF0000";
+  ctx.fillRect(0, 0, 10, 10);
+  ctx.fillStyle = "#13b4ff";
+  ctx.fillRect(10,0,10,10);
+  </script>
+  </body>
+
+  <template name="hello">
+    <p> Your account is </p>
+    <p> {{Basecoin}} {{TemplateVar.get "Basecoin"}} </p>
+    <p> The current record for highest number of pixels placed is </p>
+    <p id="highestNumPlacedPixels"></p>
+    <script>
+    myContract = web3.eth.contract(ABIarray).at(contractAddress);
+    var template = Template.instance();
+    setInterval(function() {
+    myContract.HighestPixelCount(
+        function (err, res){
+          document.getElementById("highestNumPlacedPixels").innerHTML = res; //AYYY that worked
+                  })
+  }, 45);
+  </script>
+    <p> And that record is held by </p>
+    <p id="highestNumPlacedPixelsAddress"></p>
+    <script>
+    myContract = web3.eth.contract(ABIarray).at(contractAddress);
+    var template = Template.instance();
+    setInterval(function() {
+    myContract.HighestPixelCountAddress(
+        function (err, res){
+          document.getElementById("highestNumPlacedPixelsAddress").innerHTML = res; //AYYY that worked
+                  })
+  }, 45);
+  </script>
+    <p> The curent record for highest number of power pixels placed is </p>
+    <p id="highestNumPlacedPowerPixels"></p>
+    <script>
+    myContract = web3.eth.contract(ABIarray).at(contractAddress);
+    var template = Template.instance();
+    setInterval(function() {
+    myContract.HighestPowerPixelCount(
+        function (err, res){
+          document.getElementById("highestNumPlacedPowerPixels").innerHTML = res; //AYYY that worked
+                  })
+  }, 45);
+  </script>
+    <p> And that record is held by </p>
+    <p id="highestNumPlacedPowerPixelsAddress"></p>
+    <script>
+    myContract = web3.eth.contract(ABIarray).at(contractAddress);
+    var template = Template.instance();
+    setInterval(function() {
+    myContract.HighestPowerPixelCountAddress(
+        function (err, res){
+          document.getElementById("highestNumPlacedPowerPixelsAddress").innerHTML = res; //AYYY that worked
+                  })
+  }, 45);
+  </script>
+    <p> The current block number is </p>
+    <p id="demo"></p>
+    <script>
+    var template = Template.instance();
+    // Display the result in the element with id="demo"
+    setInterval(function() {
+    web3.eth.getBlockNumber(
+        function (err, res){
+          document.getElementById("demo").innerHTML = res; //AYYY that worked
+                  })
+  }, 45);
+  </script>
+  </template>
