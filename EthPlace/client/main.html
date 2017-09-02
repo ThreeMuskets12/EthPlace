@@ -4,15 +4,70 @@
   <body>
     <h1>Welcome to EthPlace!</h1>
     {{> hello}}
-  <canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #d3d3d3;">
+  <canvas id="myCanvas" width="10000" height="10000" style="border:1px solid #d3d3d3;">
   Your browser does not support the HTML5 canvas tag.</canvas>
   <script>
+  myContract = web3.eth.contract(ABIarray).at(contractAddress);
   var c = document.getElementById("myCanvas");
   var ctx = c.getContext("2d");
-  ctx.fillStyle = "#FF0000";
-  ctx.fillRect(0, 0, 10, 10);
-  ctx.fillStyle = "#13b4ff";
-  ctx.fillRect(10,0,10,10);
+  var XCounter = 0;
+  var YCounter = 0;
+  var color = 0;
+  var broke=0;
+//HERE IS WHERE ITS GONNA GET CRAZY
+
+  setInterval(function() {
+      broke=0;
+    var test = myContract.CheckGridV((XCounter/10),(YCounter/10),function(error, result){
+    if(!error){
+        color = result;
+      }
+    else{
+        console.error(error);
+      }
+});
+    if(color==0){
+      ctx.fillStyle = "#ffffff"; //White
+    }
+    else if(color==1){
+      ctx.fillStyle = "#000000"; //Black
+    }
+    else if(color==2){
+      ctx.fillStyle = "#ff0000"; //Red
+    }
+    else if(color==3){
+      ctx.fillStyle = "#FFA500"; //Orange
+    }
+    else if(color==4){
+      ctx.fillStyle = "#FFA500"; //Yellow
+    }
+    else if(color==5){
+      ctx.fillStyle = "#008000"; //Green
+    }
+    else if(color==6){
+      ctx.fillStyle = "#0000ff"; //Blue
+    }
+    else if(color==7){
+      ctx.fillStyle = "#800080"; //Purple
+    }
+    else{
+      ctx.fillStyle = "#800080"; //White
+    }
+
+  ctx.fillRect(XCounter, YCounter, 10, 10);
+  XCounter=XCounter+10;
+  if(XCounter==10010 && YCounter==10010){
+    XCounter=0;
+    YCounter=0;
+    broke = 1;
+  }
+  if(XCounter==10010){
+    XCounter=0;
+    YCounter=YCounter+10;
+  }
+  }, 45);
+
+//HERE IS WHERE ITS GONNA GET CRAZY
   </script>
   </body>
 
