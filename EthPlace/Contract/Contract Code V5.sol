@@ -1,4 +1,4 @@
-pragma solidity ^0.4.12;
+pragma solidity ^0.4.22;
 //Code written by Noah Page
 //Version 5.0
 //Decentralized code to allow for the creation of a permanent, r/place or MillionDollarHomePage style collection of pixels
@@ -7,37 +7,39 @@ pragma solidity ^0.4.12;
 //You can place one pixel every five minutes, and placing a PowerPixel cannot be overwritten unless another PowerPixel overwrites it
 //It costs 0.01 ether to activate a regular address to start placing pixels
 //Registration fee is to prevent people from scripting a ton of addresses to take over the board
-//One PowerPixel is 0.025 ether \
-//Board is 1000x1000
+//One PowerPixel is 0.025 ether
+//Board is 100x100
 //he highest power pixel placer gets 20% of all the funds in contract, in the event of a tie, the first person to reach that number wins
 //The highest pixel placer gets 10% of all the funds in the contract, in the event of a tie, the first person to reach that number wins
-//0 is white
+//0 is light grey
 //1 is black
 //2 is red
 //3 is orange
 //4 is yellow
 //5 is green
-//6 is blue
+//6 is dark grey
 //7 is purple
-contract EthPlace {
-    string public name = "Noah";
-    address Admin; //Creates an address variable called Admin
-    uint [1000][1000] gridV; //Creates a 1000x1000 2d array called grid V to store the value of each pixel color
-    uint [1000][1000] gridP; //Creates a 1000x1000 2d array called gridR to store if a x y coordinate is a power pixel or not (This really should be an array of bools, but ¯\_(ツ)_/¯)
-    address[1000][1000] gridA; //Creates a 1000x1000 2d array called gridA to store who placed a pixel at that x y coordinate
+contract again {
+    address Admin; //Creates an address variable called Admin to store the address of the contract deployer
+    address Badmin; //Creates an address variable called Badmin to store a temp variable
+    uint [100][100] gridV; //Creates a 100x100 2d array called grid V to store the color value of each pixel color
+    uint [100][100] gridP; //Creates a 100x100 2d array called gridR to store if a x y coordinate is a power pixel or not
+    address[100][100] gridA; //Creates a 100x100 2d array called gridA to store who placed a pixel at that x y coordinate
     uint public PowerPixelFee = 0.025 ether; //Creates a variable to store the price of placing a PowerPixel called PowerPixelFee
     uint StartTime; //Creates a variable called StartTime that stores the time of when the contract is started
     uint public RegistrationFee=0.01 ether; //Creates a variable called RegistrationFee that stores the price of registering a new address
-    uint PixelWaitTime = 5 minutes; //Creates a variable called PixelWaitTime that stores the amount of time users have to wait between pixel places
-    uint GameLiveTime = 30 days; //Creates a variable called GameLiveTime that keeps track of the amount of time the game stays live for
+    uint PixelWaitTime = 1 minutes; //Creates a variable called PixelWaitTime that stores the amount of time users have to wait between pixel places
+    uint GameLiveTime = 90 days; //Creates a variable called GameLiveTime that keeps track of the amount of time the game stays live for
     bool public Live = false; //Creates a boolean that keeps track of whether the game is live or not
-    address MyAddress; //Creates an address variable that keeps tract of its own address once the contract is deployed
+    address MyAddress; //Creates an address variable that keeps track of its own address once the contract is deployed
     address public HighestPixelCountAddress; //The address of the current person with the highest pixel count
-    uint public HighestPixelCount = 0; //The number of pixels the highest person has placed
+    uint public HighestPixelCount = 20; //The number of pixels the highest person has placed
     address public HighestPowerPixelCountAddress; //The address of the current person with the highest power pixel count
     uint public HighestPowerPixelCount = 0; //The number of power pixels the highest person has placed
     uint public RegisteredAddressCounter = 0; //The number of registered addresses playing the game
-    mapping ( address => User ) public Users; //Maps the Users object thingy
+    mapping ( address => User ) public Users; //Maps the Users object
+
+
 struct User {
       bool Registered; //Boolean that keeps tract of if they are registered or not
       bool AbleToPlace; //Boolean that keeps tract of if they are able to place or not
@@ -45,93 +47,74 @@ struct User {
       uint NumOfPlacedPowerPixels; //Number of PowerPixels they placed
       uint LastPlacement; //Keeps tract of when the last time the user placed a pixel
   }
-function EthPlace() payable{
+
+constructor () public payable{
     Admin = msg.sender; //Sets the admin as the address that deployed the contract
+    HighestPixelCountAddress=admin;
     Users[Admin].Registered=true; //The admin is now registered
     Users[Admin].AbleToPlace=true; //The admin is currently able to place pixels
+    gridV[2][2]=2;
+    gridV[2][3]=2;
+    gridV[2][4]=2;
+    gridV[2][5]=2;
+    gridV[2][6]=2;
+    gridV[4][2]=2;
+    gridV[4][3]=2;
+    gridV[4][4]=2;
+    gridV[6][2]=2;
+    gridV[6][3]=2;
+    gridV[6][4]=2;
+    gridV[8][4]=6;
+    gridV[8][5]=6;
+    gridV[8][6]=6;
+    gridV[10][2]=2;
+    gridV[10][4]=2;
+    gridV[10][5]=2;
+    gridV[10][6]=2;
+    gridV[11][2]=2;
+    gridV[12][2]=2;
     }
-function RegisterAddress () payable{
+
+function RegisterAddressA (address temp) public payable{
     require(msg.value>=RegistrationFee); //Require that you pay at least the registration fee for the function to succeed
     require(Live==true); //Require that the game be live for the function to succeed
-    Users[msg.sender].Registered=true; //This specific user's registered boolean is now true
-    Users[msg.sender].AbleToPlace=true; //The user is now able to place a pixel
-    address temp = msg.sender; //Set a temp variable equal to the address of the message sender
-    temp.transfer(msg.value-RegistrationFee); //Send any left over ether (If they paid more than exactly the ticket price) back to the sender
+        Users[temp].Registered=true; //This specific user's registered boolean is now true
+        Users[temp].AbleToPlace=true; //The user is now able to place a pixel
+        RegisteredAddressCounter=RegisteredAddressCounter+1;
+        temp.transfer(msg.value-RegistrationFee); //Send any left over ether (If they paid more than exactly the ticket price) back to the sender
 }
 
-function ChangeRegistrationFee(uint NewFee){
-    require(msg.sender==Admin);
-    RegistrationFee=NewFee;
-}
-//function CurrentRegistrationFee() constant returns (uint){
-//    return RegistrationFee;
-//}
-//Eliminated because variables are public now
 
-function ChangePowerPixelFee(uint NewFee2){
-    require(msg.sender==Admin);
-    PowerPixelFee=NewFee2;
+function ChangeRegistrationFee(uint NewFee) public{
+    require(msg.sender==Admin); //Require sender to be admin
+    RegistrationFee=NewFee; //Set the RegistrationFee to the NewFee
 }
 
-//function CurrentPowerPixelFee() constant returns (uint){
-//    return PowerPixelFee;
-//}
-//Eliminated because variables are public now
-
-function ChangePixelWaitTime(uint NewWaitTime){
-    require(msg.sender==Admin);
-    PixelWaitTime=NewWaitTime;
+function ChangePowerPixelFee(uint NewFee2) public{
+    require(msg.sender==Admin); //Require sender to be admin
+    PowerPixelFee=NewFee2; //Set the RegistrationFee to the NewFee
 }
 
-//function CurrentPixelWaitTime() constant returns (uint){
-//    return PixelWaitTime;
-//}
-//Eliminated because variables are public now
-
-function ChangeGameLiveTime(uint NewGameTime){
-    require(msg.sender==Admin);
-    GameLiveTime=NewGameTime;
+function ChangePixelWaitTime(uint NewWaitTime) public{
+    require(msg.sender==Admin); //Require sender to be admin
+    PixelWaitTime=NewWaitTime; //Set the PixelWaitTime to the NewWaitTime
 }
-//function CurrentGameLiveTime() constant returns (uint){
-//    return GameLiveTime;
-//}
-//Eliminated because variables are public now
 
-//function CurrentHighestPixelCount() constant returns (uint){
-//    return HighestPixelCount;
-//}
-//Eliminated because variables are public now
+function ChangeGameLiveTime(uint NewGameTime) public{
+    require(msg.sender==Admin); //Require sender to be admin
+    GameLiveTime=NewGameTime; //Set the GameLiveTime to the NewGameTime
+}
 
-//function CurrentHighestPixelCountAddress() constant returns(address){
-//    return HighestPixelCountAddress;
-//}
-//Eliminated because variables are public now
-
-//function CurentHighestPowerPixelCount() constant returns(uint){
-//    return HighestPowerPixelCount;
-//}
-//Eliminated because variables are public now
-
-//function CurrentHighestPowerPixelCountAddress() constant returns(address){
-//    return HighestPowerPixelCountAddress;
-//}
-//Eliminated because variables are public now
-
-//function CurrentRegisteredAddresses() constant returns(uint){
-//    return RegisteredAddressCounter;
-//}
-//Eliminated because variables are public now
-
-function PlacePixel(uint value, uint x, uint y) returns (uint timeRemaining){ //Accepts a value
+function PlacePixel(uint value, uint x, uint y) public returns (uint timeRemaining){ //Accepts a value
     require(Users[msg.sender].Registered==true); //You must be registered
     require(Live==true);//The game must be live
     require(gridP[x][y]!=1);//The spot must not have been taken by a power pixel
     require(value==0 || value==1 || value==2 || value == 3 || value == 4 || value ==5 || value == 6 || value == 7); //value has to be 0 through 7
     require(x>=0); //X has to be greater than or equal to 0
-    require(x<=1000); //X has to be less than or equal to 1000
+    require(x<=100); //X has to be less than or equal to 100
     require(y>=0); //Y has to be greater than or equal to 0
-    require(y<=1000); //Y has to be less than or equal to 1000
-    if(Users[msg.sender].LastPlacement + PixelWaitTime <= now){ //if your last placement plus five mins is still less than the current time, you can place
+    require(y<=100); //Y has to be less than or equal to 100
+    if(Users[msg.sender].LastPlacement + PixelWaitTime <= now){ //if your last placement plus wait time is still less than the current time, you can place
         Users[msg.sender].AbleToPlace=true;
     }
     if(Users[msg.sender].AbleToPlace==true){//You must be able to place
@@ -150,15 +133,16 @@ function PlacePixel(uint value, uint x, uint y) returns (uint timeRemaining){ //
         return (Users[msg.sender].LastPlacement + PixelWaitTime) - now; //Return your time remaining
     }
 }
-function PlacePowerPixel (uint value, uint x, uint y) payable{ //Accepts a value
+
+function PlacePowerPixel (uint value, uint x, uint y) public payable{ //Accepts a value
     require(msg.value>=PowerPixelFee); //You must send at least the PowerPixelFee
     require(Live==true); //The game must be live
     require(Users[msg.sender].Registered==true);//You must be registered
     require(value==0 || value==1 || value==2 || value == 3 || value == 4 || value ==5 || value == 6 || value == 7); //value has to be 0 through 7
     require(x>=0); //X has to be greater than or equal to 0
-    require(x<=1000); //X has to be less than or equal to 1000
+    require(x<=100); //X has to be less than or equal to 100
     require(y>=0); //Y has to be greater than or equal to 0
-    require(y<=1000); //Y has to be less than or equal to 1000
+    require(y<=100); //Y has to be less than or equal to 100
         Users[msg.sender].NumOfPlacedPowerPixels++; //Increases your number of placed power pixels
         gridA[x][y]=msg.sender; //Fill in the address of the person who placed this pixel
         gridV[x][y]=value;
@@ -170,29 +154,31 @@ function PlacePowerPixel (uint value, uint x, uint y) payable{ //Accepts a value
         address temp = msg.sender; //Set a temp variable equal to the address of the message sender
         temp.transfer(msg.value-PowerPixelFee); //Send any left over ether back to the message sender
 }
-function CheckGridV(uint x, uint y) constant returns (uint) {
+
+function CheckGridV(uint x, uint y) public constant returns (uint) {
     require(x>=0); //X has to be greater than or equal to 0
-    require(x<=1000); //X has to be less than or equal to 1000
+    require(x<=100); //X has to be less than or equal to 100
     require(y>=0); //Y has to be greater than or equal to 0
-    require(y<=1000); //Y has to be less than or equal to 1000
+    require(y<=100); //Y has to be less than or equal to 100
         return gridV[x][y]; //Return the R value at the given x y value
     }
 
-function CheckGridP(uint x, uint y) constant returns (uint) {
+function CheckGridP(uint x, uint y) public constant returns (uint) {
     require(x>=0); //X has to be greater than or equal to 0
-    require(x<=1000); //X has to be less than or equal to 1000
+    require(x<=100); //X has to be less than or equal to 100
     require(y>=0); //Y has to be greater than or equal to 0
-    require(y<=1000); //Y has to be less than or equal to 1000
+    require(y<=100); //Y has to be less than or equal to 100
         return gridP[x][y]; //Return the P value at the given x y value, 1 means it is a powerpixel square
     }
-function CheckGridA(uint x, uint y) constant returns (address) {
+function CheckGridA(uint x, uint y) public constant returns (address) {
     require(x>=0); //X has to be greater than or equal to 0
-    require(x<=1000); //X has to be less than or equal to 1000
+    require(x<=100); //X has to be less than or equal to 100
     require(y>=0); //Y has to be greater than or equal to 0
-    require(y<=1000); //Y has to be less than or equal to 1000
+    require(y<=100); //Y has to be less than or equal to 100
         return gridA[x][y]; //Return the P value at the given x y value, 1 means it is a powerpixel square
     }
-function AttemptToStart(address start) returns (bool success){
+
+function AttemptToStart(address start) public returns (bool success){
     if(msg.sender==Admin){ //If you are the admin
         Live=true; //Set Live to true (start the game)
         StartTime=now; //The start time of the game is equal to now
@@ -204,7 +190,8 @@ function AttemptToStart(address start) returns (bool success){
         return false;
     }
 }
-function AttemptToEnd() returns (bool success){
+
+function AttemptToEnd() public returns (bool success){
     if(StartTime + GameLiveTime <=now && Live==true){ //If it has been 30 days
         Live=false; //Set Live equal to false (End the game)
         Admin.transfer((MyAddress.balance/10)*7); //Send 70% of the balance in the contract to the Admin
@@ -216,7 +203,8 @@ function AttemptToEnd() returns (bool success){
         return false;
     }
 }
-function (){ //The oh crap something went wrong fuction
- throw;   
+
+function () public { //The oh crap something went wrong fuction
+ revert();   
 }
 }

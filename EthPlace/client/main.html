@@ -4,21 +4,21 @@
   <body>
     <h1>Welcome to EthPlace!</h1>
     {{> hello}}
-  <canvas id="myCanvas" width="10000" height="10000" style="border:1px solid #d3d3d3;">
+  <canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #d3d3d3;">
   Your browser does not support the HTML5 canvas tag.</canvas>
   <script>
   myContract = web3.eth.contract(ABIarray).at(contractAddress);
   var c = document.getElementById("myCanvas");
   var ctx = c.getContext("2d");
   var XCounter = 0;
-  var YCounter = 0;
+  var YCounter = 2;
   var color = 0;
   var broke=0;
 //HERE IS WHERE ITS GONNA GET CRAZY
 
   setInterval(function() {
       broke=0;
-    var test = myContract.CheckGridV((XCounter/10),(YCounter/10),function(error, result){
+    var test = myContract.CheckGridV((XCounter),(YCounter),function(error, result){
     if(!error){
         color = result;
       }
@@ -27,7 +27,7 @@
       }
 });
     if(color==0){
-      ctx.fillStyle = "#ffffff"; //White
+      ctx.fillStyle = "#d3d3d3"; //Grey
     }
     else if(color==1){
       ctx.fillStyle = "#000000"; //Black
@@ -45,7 +45,7 @@
       ctx.fillStyle = "#008000"; //Green
     }
     else if(color==6){
-      ctx.fillStyle = "#0000ff"; //Blue
+      ctx.fillStyle = "#A9A9A9"; //Blue
     }
     else if(color==7){
       ctx.fillStyle = "#800080"; //Purple
@@ -54,18 +54,18 @@
       ctx.fillStyle = "#800080"; //White
     }
 
-  ctx.fillRect(XCounter, YCounter, 10, 10);
-  XCounter=XCounter+10;
-  if(XCounter==10010 && YCounter==10010){
+  ctx.fillRect(XCounter*10, YCounter*10, 10, 10);
+  XCounter=XCounter+1;
+  if(XCounter==20 && YCounter==20){
     XCounter=0;
     YCounter=0;
     broke = 1;
   }
-  if(XCounter==10010){
+  if(XCounter==20){ //Supposed to be 101 but is 20 for testing
     XCounter=0;
-    YCounter=YCounter+10;
+    YCounter=YCounter+1;
   }
-  }, 45);
+  }, 500);
 
 //HERE IS WHERE ITS GONNA GET CRAZY
   </script>
@@ -98,6 +98,7 @@
                   })
   }, 45);
   </script>
+
     <p> The curent record for highest number of power pixels placed is </p>
     <p id="highestNumPlacedPowerPixels"></p>
     <script>
